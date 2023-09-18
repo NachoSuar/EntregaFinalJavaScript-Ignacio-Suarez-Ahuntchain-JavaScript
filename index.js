@@ -1,274 +1,201 @@
-alert("Bienvenido");
-const numero1 = 5000;
-const numero2 = 5500;
-const numero3 = 3;
-const numero4 = 6;
-const numero5 = 12;
-let productArr = []
-let carritoArr =[]
-let TrueOrFalse = true;
-const dbProdcutos = [
+const ListaProductos = [
     {
         id: 1,
-        name: "Avene",
-        price: 800,
+        nombre: "Avene",
+        precio: 1800,
+        imagen: "imagenes/Avene.jpg",
     },
     {
         id: 2,
-        name: "Hydroboost",
-        price: 850,
+        nombre: "Loreal",
+        precio: 2000,
+        imagen: "imagenes/Loreal.jpg",
     },
     {
         id: 3,
-        name: "Loreal",
-        price: 900,
+        nombre: "Hydroboost",
+        precio: 3200,
+        imagen: "imagenes/Hydroboost.jpg",
     },
     {
         id: 4,
-        name: "Pronds",
-        price: 1000,
+        nombre: "Pond",
+        precio: 3800,
+        imagen: "imagenes/Pond.jpg",
     },
 ];
-const productosArr = []
 
-while (TrueOrFalse) {
-    const nombre = prompt("Ingrese su nombre");
-    const apellido = prompt("Ingrese su apellido");
-    const email = prompt("Ingrese su email");
-    if (nombre != "" && apellido != "" && email != "") {
-        alert(`Bienvenido ${nombre} ${apellido}!`);
-        const verificar = prompt("Desea Suscribirse a nuestro servicio? Y/N").toUpperCase();
-        if (verificar == "N") {
-            TrueOrFalse = false;
-        } else {
-            alert("El costo de la suscripcion anual es de $5000 en un pago y 10% de interes en cuotas");
-            const cuotas = prompt("Ingrese el numero de orden de la opcion a seleccionar: \n1. Una Cuota \n2. Tres Cuotas \n3. Seis Cuotas \n4. Doce Cuotas \n5. Cancelar");
-            let resultado;
-            switch (cuotas) {
-                case "1":
-                    resultado = numero1;
-                    alert(`El costo total es de : $${resultado}`);
-                    alert("Muchas Gracias por su compra.");
-                    initProgram();
-                    break;
-                case "2":
-                    resultado = division(numero2, numero3);
-                    alert(`Quedaria en 3 cuotas de : $${resultado}`);
-                    alert("Muchas Gracias por su compra.");
-                    initProgram();
-                    break;
-                case "3":
-                    resultado = division(numero2, numero4);
-                    alert(`Quedaria en 6 cuotas de : $${resultado}`);
-                    alert("Muchas Gracias por su compra.");
-                    initProgram();
-                    break;
-                case "4":
-                    resultado = division(numero2, numero5);
-                    alert(`Quedaria en 12 cuotas de : $${resultado}`);
-                    alert("Muchas Gracias por su compra.");
-                    initProgram();
-                    break;
-                case "5":
-                    TrueOrFalse = false;
-                    break;
-                default:
-                    alert("La operacion ingresada no es valida");
-            }
-        }
-    } else {
-        alert("Por favor complete todos los campos");
-        const verificar = prompt("Quiere continuar? S/N").toUpperCase();
-        if (verificar == "N") {
-            TrueOrFalse = false;
-        } else {
-            TrueOrFalse = true;
-        }
-    }
-}
 
-function division(a, b) {
-    return a / b;
-}
+const formulario = document.querySelector("#formulario");
+const name = document.querySelector("#name");
+const price = document.querySelector("#price");
+const description = document.querySelector("#description");
+const btnAddProduct = document.querySelector("#btnAddProduct");
+const productSelect = document.querySelector("#productSelect");
+const sellProduct = document.querySelector("#sellProduct");
+const productList = document.querySelector("#productList");
+const total = document.querySelector("#total");
+const arrayCarrito = [];
 
-initProgram();
+// Agrega un producto Nuevo
 
-class Producto {
-    constructor({ id, name, price }) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-    }
-    iva(){
-        return this.price * 0.21;
-    }
-}
-function pushProducto(){
-    for (const elemento of dbProdcutos){
-        productArr.push(new Producto(elemento));
-        console.log(productArr);
-    }
-}
+formulario.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const producto = {
+        id: Date.now(),
+        nombre: name.value,
+        precio: price.value,
+        description: description.value,
+        imagen: 'imagenes/Perfil.jpg' 
+    };
 
-pushProducto();
+    ListaProductos.push(producto);
+    rederizarSelect();
+    renderizarCarrito();
+    localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
+});
 
-function initProgram(){
-    while(TrueOrFalse){
-        let selectSection = parseInt( prompt(
-            "¿Qué quieres hacer? \n 1. Añadir un producto \n 2. Ver productos seleccionados \n 3. Comprar Producto \n 4. Buscar un producto \n 5. Ver todos los productos \n 6. Salir"
-        ));
-    
-    switch(selectSection){
-        case 1:
-            anadirProducto(TrueOrFalse);
-            break;
-        case 2:
-            verProductos(TrueOrFalse);
-            break;
-        case 3:
-            comprarProducto(TrueOrFalse);
-            break;
-        case 4:
-            buscarProducto(TrueOrFalse);
-            break;
-        case 5:
-            verTodosProductos(TrueOrFalse);
-            break;
-        case 6:
-            TrueOrFalse = false;
-            break;
-        default:
-            alert("Opción no válida. Por favor, seleccione una opción válida.");
-            break;    
-    }
-    }
-}
+// Renderiza un producto seleccionado
 
-function anadirProducto(TrueOrFalse){
-    let productosSeleccionados = [];
-    while (TrueOrFalse){
-        let selectProduct = parseInt(prompt(
-            "¿Qué productos desea seleccionar? \n 1. Avene \n 2. Hydroboost \n 3. Loreal \n 4. Ponds \n 5. Finalizar Selección"
-        ));
-            switch(selectProduct){
-                case 1:
-                    productosSeleccionados.push("Avene");
-                    alert("Producto Avene seleccionado")
-                    break;
-                case 2:
-                    productosSeleccionados.push("Hydroboost");
-                    alert("Producto Hydroboost seleccionado")
-                    break;
-                case 3:
-                    productosSeleccionados.push("Loreal");
-                    alert("Producto Loreal seleccionado")
-                    break;
-                case 4:
-                    productosSeleccionados.push("Ponds");
-                    alert("Producto Ponds seleccionado")
-                    break;
-                case 5:
-                    TrueOrFalse = false
-                    break;
-                default:
-                    alert("Opción no válida. Por favor, seleccione una opción válida.");
-                break;
-        }
-        if (productosSeleccionados.length === 5) {
-            alert("Ha seleccionado la opción n°5. La operación ha sido cancelada.");
-            break;
-        }
-    }
-    productosArr.push(...productosSeleccionados)
-    console.log("Productos seleccionados: " + productosSeleccionados.join(", "));
-}
-
-function verProductos(){
-    let prod = "";
-    productosArr.forEach((elemento) => {
-        prod += elemento + "\n";
-    }); 
-    alert(prod);
-}
-
-function buscarProducto(){
-    const nombreProducto = prompt("Introduce el nombre del producto que desea buscar");
-    const productoEncontrado = productosArr.map((producto) => producto)
-    .indexOf(nombreProducto);
-    if(productoEncontrado == -1){
-        alert("No se encontro el producto")
-    }else{
-        alert("Se encontro el producto" + "\n" + productosArr[productoEncontrado]);
-    }
-}
-
-function showProducts(arr){
-    let produc = "";
-    for (const elemento of arr) {
-        produc += `- ${elemento.name}\n`;
-    }
-    return produc;
-}
-
-function verTodosProductos() {
-    const productos = showProducts(dbProdcutos);
-    alert(productos);
-    alert("Fin");
-    initProgram();
-}
-
-function comprarProducto(){
-    let productoABuscar = prompt("Ingrese el nombre del producto a buscar (o escriba 'salir' para volver atrás o 'finalizar' para terminar la compra)");
-    if (productoABuscar.toLowerCase() === "salir") {
-        return;
-    }else if (productoABuscar.toLowerCase() === "finalizar") {
-        finalizarCompra();
-        return;
-    }
-
-    let productoEncontrad = dbProdcutos.some ((elm) => {
-        return elm.name === productoABuscar;
+function rederizarSelect() {
+    productSelect.innerHTML =
+        '<option value="" disabled selected>Seleccione un producto</option>';
+    ListaProductos.forEach((producto) => {
+        productSelect.innerHTML += `<option value="${producto.id}">${producto.nombre}</option>`;
     });
-
-    if(productoEncontrad){
-        alert("El producto existe");
-        addToCart(productoABuscar)
-    }else{
-        alert("El producto no existe");
-    }
 }
 
-function finalizarCompra() {
-    if (carritoArr.length === 0) {
-        alert("El carrito de compras está vacío. No se puede finalizar la compra.");
-    } else {
-        sumarPrecioTotal();
-        eliminarTodosLosProductos();
-    }
-}
-
-function addToCart(productoABuscar){
-    let produc = dbProdcutos.find((elm) =>{
-        return elm.name === productoABuscar;
-    });
-    if(produc){
-        carritoArr.push(produc)
-        let confirmar = prompt("Desea agregar otro producto? SI/NO")
-        if(confirmar === "SI"){
-            comprarProducto();
-        }else{
-            sumarPrecioTotal();
-            eliminarTodosLosProductos();
+document.addEventListener("click", (e) => {
+    const btnBorrar = document.querySelectorAll(".btnBorrar");
+    btnBorrar.forEach((btn) => {
+        if (e.target == btn) {
+            const id = e.target.id;
+            borrarProducto(id)
+            totalCarrito()
         }
+    });
+});
+
+
+// Vender un producto
+
+sellProduct.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const id = productSelect.value;
+    const producto = buscarProducto(id, ListaProductos);
+    agregarProducto(producto);
+    renderizarCarrito();
+    localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
+});
+
+function buscarProducto(id, array) {
+    const producto = array.find((producto) => producto.id == id);
+    return producto;
+}
+
+// Agrega productos 
+
+function agregarProducto(producto) {
+    if (producto) {
+        const productoEncontrado = buscarProducto(producto.id, arrayCarrito);
+        if (productoEncontrado) {
+            productoEncontrado.cantidad++;
+            console.log(arrayCarrito);
+        } else {
+            arrayCarrito.push({
+                ...producto,
+                cantidad: 1,
+            });
+
+        }
+        renderizarCarrito();
+        totalCarrito()
+        localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
     }
 }
 
-function sumarPrecioTotal(){
-    let precioTotal = carritoArr.reduce((a,b) => a + b.price, 0); //"A = acumulador y B = producto"
-    alert("El precio total es " + precioTotal);
-}
-function eliminarTodosLosProductos(){
-    carritoArr.splice(0, carritoArr.length);
+// Renderiza el carrito actual
+
+function renderizarCarrito() {
+    productList.innerHTML = "";
+    arrayCarrito.forEach((producto) => {
+        productList.innerHTML += `
+        <div class="card">
+        <img src="${producto.imagen ? producto.imagen : "No hay"}" alt="">
+            <div class="card-body">
+                <h5 class="card-title">${producto.nombre ? producto.nombre : "No hay"}</h5>
+                <p class="card-text">${producto.precio ? producto.precio : "No hay"}</p>
+                <p class="card-text">${producto.cantidad ? producto.cantidad : 0}</p>
+                <button class="btn btn-danger btnBorrar" id="${producto.id}">Eliminar</button>
+            </div>
+        </div>
+        `;
+    });
 }
 
-initProgram();
+// Borra los productos seleccionados
+
+function borrarProducto(id) {
+    const producto = buscarProducto(id, arrayCarrito);
+    if (producto.cantidad > 1) {
+        producto.cantidad--;
+    } else {
+        const index = arrayCarrito.indexOf(producto);
+        arrayCarrito.splice(index, 1);
+    }
+    renderizarCarrito();
+    localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
+}
+
+document.addEventListener("click", (e) => {
+    const btnBorrar = document.querySelectorAll(".btnBorrar");
+    btnBorrar.forEach((btn) => {
+        if (e.target == btn) {
+            const id = e.target.id;
+            borrarProducto(id)
+            totalCarrito()
+        }
+    });
+});
+
+// Total del carrito
+
+function totalCarrito() {
+    const totalFinal = arrayCarrito.reduce((acc, producto) => acc + producto.precio * producto.cantidad, 0)
+    total.innerHTML = totalFinal
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    rederizarSelect();
+    const carritoStorage = JSON.parse(localStorage.getItem("carrito")) || []
+    if (carritoStorage.length > 0) {
+        carritoStorage.forEach(producto => {
+            arrayCarrito.push(producto)
+        })
+        renderizarCarrito()
+        totalCarrito()
+    } else {
+        alert("No hay productos en el carrito")
+    }
+
+});
+
+const concretarCompraButton = document.querySelector("#concretarCompra");
+concretarCompraButton.addEventListener("click", () => {
+    if (arrayCarrito.length === 0) {
+        alert("No hay artículos seleccionados");
+    } else {
+        concretarCompra();
+    }
+});
+
+//funcion para Finalizar Compra
+
+function concretarCompra() {
+    alert("¡Compra realizada con éxito! Gracias por tu compra.");
+    arrayCarrito.length = 0;
+    renderizarCarrito();
+    totalCarrito();
+    localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
+    window.location.href = "index.html";
+}
