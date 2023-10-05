@@ -1,29 +1,4 @@
-const ListaProductos = [
-    {
-        id: 1,
-        nombre: "Avene",
-        precio: 1800,
-        imagen: "imagenes/Avene.jpg",
-    },
-    {
-        id: 2,
-        nombre: "Loreal",
-        precio: 2000,
-        imagen: "imagenes/Loreal.jpg",
-    },
-    {
-        id: 3,
-        nombre: "Hydroboost",
-        precio: 3200,
-        imagen: "imagenes/Hydroboost.jpg",
-    },
-    {
-        id: 4,
-        nombre: "Pond",
-        precio: 3800,
-        imagen: "imagenes/Pond.jpg",
-    },
-];
+const ListaProductos = [];
 
 
 const formulario = document.querySelector("#formulario");
@@ -46,7 +21,7 @@ formulario.addEventListener("submit", (e) => {
         nombre: name.value,
         precio: price.value,
         description: description.value,
-        imagen: 'imagenes/Perfil.jpg' 
+        img: 'imagenes/Perfil.jpg' 
     };
 
     ListaProductos.push(producto);
@@ -121,7 +96,7 @@ function renderizarCarrito() {
     arrayCarrito.forEach((producto) => {
         productList.innerHTML += `
         <div class="card">
-        <img src="${producto.imagen ? producto.imagen : "No hay"}" alt="">
+        <img src="${producto.img ? producto.img : ""}" alt="">
             <div class="card-body">
                 <h5 class="card-title">${producto.nombre ? producto.nombre : "No hay"}</h5>
                 <p class="card-text">${producto.precio ? producto.precio : "No hay"}</p>
@@ -132,6 +107,7 @@ function renderizarCarrito() {
         `;
     });
 }
+    
 
 // Borra los productos seleccionados
 
@@ -175,7 +151,18 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarCarrito()
         totalCarrito()
     } else {
-        alert("No hay productos en el carrito")
+        Toastify({
+            text: "No hay productos en el carrito",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "linear-gradient(to right, #00b09b, #5cb85c)",
+            },
+            onClick: function(){}
+          }).showToast();
     }
 
 });
@@ -192,10 +179,73 @@ concretarCompraButton.addEventListener("click", () => {
 //funcion para Finalizar Compra
 
 function concretarCompra() {
-    alert("¡Compra realizada con éxito! Gracias por tu compra.");
-    arrayCarrito.length = 0;
-    renderizarCarrito();
-    totalCarrito();
-    localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
-    window.location.href = "index.html";
+    Toastify({
+        text: "¡Compra realizada con éxito! Gracias por tu compra.",
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "linear-gradient(to right, #00b09b, #5cb85c)",
+        },
+        onClick: function(){}
+    }).showToast();
+    setTimeout(function () {
+        arrayCarrito.length = 0;
+        renderizarCarrito();
+        totalCarrito();
+        localStorage.setItem("carrito", JSON.stringify(arrayCarrito));
+        window.location.href = "index.html";
+    }, 3000);
 }
+
+// Simulador de Pagos
+
+function esperandoElpago(){
+    return new Promise((resolve, reject) => {
+        const validarPago = Math.random() < 0.5
+        setTimeout(() =>{
+            if (validarPago){
+                resolve({
+                    codigo: 200,
+                    mensaje: "El pago se realizo correctamente"
+                })
+            } else {
+                reject({
+                    codigo: 400,
+                    mensaje: "El pago no se pudo realizar"
+                })
+            }
+        }, 3000)
+    })
+}
+
+esperandoElpago(). then ((mensaje) =>{
+    console.log(mensaje)
+}).catch((error) =>{    // Evita que por consola figure error al no realizar un pago
+    console.log(error)
+})
+
+// Función para cargar productos desde un archivo JSON a mi Lista de productos
+
+function cargarProductosDesdeJSON() {
+    return fetch("./productos.json")
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("No se pudo cargar el archivo JSON.");
+            }
+            return response.json();
+        });
+}
+
+// Llama a la función para cargar productos desde JSON y luego asigna los datos a la Lista de Productos
+
+cargarProductosDesdeJSON()
+    .then((productos) => {
+        console.log("Productos cargados desde el JSON:", productos);
+        ListaProductos.push(...productos);
+        rederizarSelect();
+    })
+    .catch((error) => {
+        console.error("Error al cargar productos desde el JSON:", error);
+    });
